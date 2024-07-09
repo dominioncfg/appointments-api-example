@@ -1,7 +1,5 @@
 ﻿using AppointmentsApi.Application;
-using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AppointmentsApi.Api;
 
@@ -17,7 +15,7 @@ public class ValidationException : AppointmentsServiceApplicationException
     public ValidationException(string propertyName, string error)
         : base("One or more validation failures have occurred.")
     {
-        Errors = new Dictionary<string, string[]>() { [propertyName] = new[] { error } };
+        Errors = new Dictionary<string, string[]>() { [propertyName] = [error] };
     }
 
     public ValidationException(IEnumerable<ValidationFailure> failures)

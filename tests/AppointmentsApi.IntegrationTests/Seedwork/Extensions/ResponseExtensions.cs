@@ -13,9 +13,6 @@ public static class ResponseExtensions
         };
         var result = JsonSerializer.Deserialize<T>(content, options);
 
-        if (result is null)
-            throw new System.Exception("The Response could not be parsed.");
-
-        return result;
+        return result is null ? throw new System.Exception("The Response could not be parsed.") : result;
     }
 }

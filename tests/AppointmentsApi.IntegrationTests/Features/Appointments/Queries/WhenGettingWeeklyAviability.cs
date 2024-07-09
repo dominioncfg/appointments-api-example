@@ -1,5 +1,4 @@
 using AppointmentsApi.Api.Features.Appointments;
-using AppointmentsApi.IntegrationTests.Seedwork;
 
 namespace AppointmentsApi.IntegrationTests;
 
@@ -35,5 +34,5 @@ public class WhenGettingWeeklyAviability
         await Given.Server.CreateClient().GetAndExpectBadRequestAsync(url);
     }
 
-    private static string GetAppointmentsUrl(DateTime date) => $"api/appointments?date={date.ToString("yyyy-MM-dd")}";
+    private static string GetAppointmentsUrl(DateTime date) => $"api/appointments?date={date:yyyy-MM-dd}";
 }
