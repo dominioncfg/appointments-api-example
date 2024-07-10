@@ -19,7 +19,7 @@ public class AppointmentsController : ControllerBase
     [HttpGet]
     public async Task<GetWeeklyAviabilityApiResponse> GetWeeklyAvailability(DateTime date, CancellationToken cancellationToken)
     {
-        var query = new GetWeeklyAvaiabilityQuery()
+        var query = new GetWeeklyAvailabilityQuery()
         {
             Date = date,
         };

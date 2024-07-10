@@ -8,7 +8,7 @@ public record GetWeeklyAviabilityApiResponse
     public int SlotDurationMinutes { get; init; }
     public GetWeeklyAviabilityDaysApiResponse Days { get; init; } = new GetWeeklyAviabilityDaysApiResponse();
 
-    public static GetWeeklyAviabilityApiResponse FromQueryResponse(GetWeeklyAvaiabilityQueryResponse response)
+    public static GetWeeklyAviabilityApiResponse FromQueryResponse(GetWeeklyAvailabilityQueryResponse response)
     {
         return new GetWeeklyAviabilityApiResponse()
         {
@@ -32,7 +32,7 @@ public record GetWeeklyAviabilityApiResponse
         };
     }
 
-    private static GetWeeklyAviabilityDayScheduleApiResponse? ConvertDayFromQueryResponse(GetWeeklyAvaiabilityDayScheduleQueryResponse? day)
+    private static GetWeeklyAviabilityDayScheduleApiResponse? ConvertDayFromQueryResponse(GetWeeklyAvailabilityDayScheduleQueryResponse? day)
     {
         if (day is null)
             return null;
