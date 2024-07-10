@@ -38,9 +38,9 @@ public sealed class TestServerFixture : IDisposable
                    .AddJsonFile("appsettings.json");
             })
             .UseEnvironment("Test")
-            .ConfigureServices(services =>
+            .ConfigureServices((context, services) =>
             {
-                services.ConfigureAppointmentsApiServices();
+                services.ConfigureAppointmentsApiServices(context.Configuration);
             })
             .ConfigureWebHost(webHost =>
             {

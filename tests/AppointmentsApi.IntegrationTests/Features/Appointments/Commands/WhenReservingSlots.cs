@@ -70,18 +70,18 @@ public class WhenReservingSlots
 
     private async Task PostAndExpectCreated(ReserveAppointmentSlotApiRequest request)
     {
-        var url = ReserveAppointmentsUrl(SomeMonday);
+        var url = ReserveAppointmentsUrl();
         await Given.Server.CreateClient().PostAndExpectCreatedAsync(url, request);
     }
 
     private async Task PostAndExpectBadRequest(ReserveAppointmentSlotApiRequest request)
     {
-        var url = ReserveAppointmentsUrl(SomeMonday);
+        var url = ReserveAppointmentsUrl();
         await Given.Server.CreateClient().PostAndExpectBadRequestAsync(url, request);
     }
 
 
-    private static string ReserveAppointmentsUrl(DateTime date) => $"api/appointments/reserve";
+    private static string ReserveAppointmentsUrl() => $"api/appointments/reserve";
 }
 
 

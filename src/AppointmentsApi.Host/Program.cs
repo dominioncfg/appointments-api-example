@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .ConfigureAppointmentsApiServices();
+    .ConfigureAppointmentsApiServices(builder.Configuration);
 
 var app = builder.Build();
 
