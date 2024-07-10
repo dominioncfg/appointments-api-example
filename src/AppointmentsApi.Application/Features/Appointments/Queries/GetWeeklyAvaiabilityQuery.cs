@@ -67,7 +67,7 @@ public class GetWeeklyAvaiabilityQueryHandler : IRequestHandler<GetWeeklyAvaiabi
 
     public async Task<GetWeeklyAvaiabilityQueryResponse> Handle(GetWeeklyAvaiabilityQuery request, CancellationToken cancellationToken)
     {
-        var date = request.Date.Date;
+        var date =  request.Date.GetStartOfSchedulingWeek();
 
         var response = await _appointmentsApiClient.GetWeeklyAvaibility(date, cancellationToken);
 

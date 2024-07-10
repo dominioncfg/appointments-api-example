@@ -8,7 +8,7 @@ namespace AppointmentsApi.IntegrationTests;
 public class WhenGettingWeeklyAviability
 {
     private readonly TestServerFixture Given;
-    private readonly DateTime SomeMonday = new(2024, 07, 08);
+    private static readonly DateTime SomeMonday = new(2024, 07, 08);
     private DateTime SomeTuesday => SomeMonday.AddDays(1);
     private DateTime SomeWednesday => SomeMonday.AddDays(2);
     private DateTime SomeThursday => SomeMonday.AddDays(3);
@@ -378,6 +378,41 @@ public class WhenGettingWeeklyAviability
         response.Days.Thursday!.FreeSlots.Should().NotBeNull().And.HaveCount(expectedCount);
     }
 
+
+    public static TheoryData<DateTime> WholeWeekCases = new()
+    {
+        { SomeMonday },
+        { SomeMonday.AddDays(1) },
+        { SomeMonday.AddDays(2) },
+        { SomeMonday.AddDays(3) },
+        { SomeMonday.AddDays(4) },
+        { SomeMonday.AddDays(5) },
+        { SomeMonday.AddDays(6) },
+    };
+    [Theory]
+    [ResetApplicationState]
+    [MemberData(nameof(WholeWeekCases))]
+    public async Task CanRequestScheduleForAnyDayOfTheWeekAndWillReturnTheSameSchedule(DateTime date)
+    {
+        var apiResponse = AvaibilityWeeklyScheduleResponseBuilder.ValidWorkingScheduleOnDayWithNoBusySlotsResponse()
+             .WithFacility(facility => facility
+                .WithFacilityId(Guid.NewGuid())
+                .WithName("Las Palmeras")
+                .WithAddress("Plaza de la independencia 36, 38006 Santa Cruz de Tenerife")
+            ).Build();
+        Given.AsssumeWeeklyScheduleReturnedByExternalApiForDate(SomeMonday, apiResponse);
+
+        var url = GetAppointmentsUrl(date);
+        var response = await Given.Server.CreateClient().GetAsync<GetWeeklyAviabilityApiResponse>(url);
+
+        response.Should().NotBeNull();
+
+        response.Days.Should().NotBeNull();
+
+        response.Facility.FacilityId.Should().Be(apiResponse.Facility.FacilityId);
+        response.Facility.Name.Should().Be(apiResponse.Facility.Name);
+        response.Facility.Address.Should().Be(apiResponse.Facility.Address);
+    }
 
     [Fact]
     [ResetApplicationState]
