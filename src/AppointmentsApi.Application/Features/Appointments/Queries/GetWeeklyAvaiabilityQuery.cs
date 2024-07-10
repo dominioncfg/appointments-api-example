@@ -31,6 +31,8 @@ public record GetWeeklyAvaiabilityDaysQueryResponse
     public GetWeeklyAvaiabilityDayScheduleQueryResponse? Wednesday { get; init; }
     public GetWeeklyAvaiabilityDayScheduleQueryResponse? Thursday { get; init; }
     public GetWeeklyAvaiabilityDayScheduleQueryResponse? Friday { get; init; }
+    public GetWeeklyAvaiabilityDayScheduleQueryResponse? Saturday { get; init; }
+    public GetWeeklyAvaiabilityDayScheduleQueryResponse? Sunday { get; init; }
 }
 
 
@@ -74,6 +76,9 @@ public class GetWeeklyAvaiabilityQueryHandler : IRequestHandler<GetWeeklyAvaiabi
         var wednesday = GetAvailableSpots(response.Wednesday, date.Date.AddDays(2), response.SlotDurationMinutes);
         var thursday = GetAvailableSpots(response.Thursday, date.Date.AddDays(3), response.SlotDurationMinutes);
         var friday = GetAvailableSpots(response.Friday, date.Date.AddDays(4), response.SlotDurationMinutes);
+        var saturday = GetAvailableSpots(response.Friday, date.Date.AddDays(5), response.SlotDurationMinutes);
+        var sunday = GetAvailableSpots(response.Friday, date.Date.AddDays(6), response.SlotDurationMinutes);
+
 
         return new GetWeeklyAvaiabilityQueryResponse
         {
@@ -91,6 +96,8 @@ public class GetWeeklyAvaiabilityQueryHandler : IRequestHandler<GetWeeklyAvaiabi
                 Wednesday = wednesday,
                 Thursday = thursday,
                 Friday = friday,
+                Saturday = saturday,
+                Sunday = sunday,
             }
         };
     }

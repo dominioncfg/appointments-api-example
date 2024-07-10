@@ -26,6 +26,8 @@ public record GetWeeklyAviabilityApiResponse
                 Wednesday = ConvertDayFromQueryResponse(response.Days.Wednesday),
                 Thursday = ConvertDayFromQueryResponse(response.Days.Thursday),
                 Friday = ConvertDayFromQueryResponse(response.Days.Friday),
+                Saturday = ConvertDayFromQueryResponse(response.Days.Saturday),
+                Sunday = ConvertDayFromQueryResponse(response.Days.Sunday),
             }
         };
     }
@@ -60,6 +62,8 @@ public record GetWeeklyAviabilityDaysApiResponse
     public GetWeeklyAviabilityDayScheduleApiResponse? Wednesday { get; init; }
     public GetWeeklyAviabilityDayScheduleApiResponse? Thursday { get; init; }
     public GetWeeklyAviabilityDayScheduleApiResponse? Friday { get; init; }
+    public GetWeeklyAviabilityDayScheduleApiResponse? Saturday { get; init; }
+    public GetWeeklyAviabilityDayScheduleApiResponse? Sunday { get; init; }
 }
 
 public record GetWeeklyAviabilityDayScheduleApiResponse

@@ -9,6 +9,8 @@ public record AvaibilityWeeklyScheduleResponse
     public DayScheduleResponse? Wednesday { get; init; }
     public DayScheduleResponse? Thursday { get; init; }
     public DayScheduleResponse? Friday { get; init; }
+    public DayScheduleResponse? Saturday { get; init; }
+    public DayScheduleResponse? Sunday { get; init; }
 }
 
 public record FacilityResponse

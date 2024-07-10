@@ -62,6 +62,8 @@ public class WhenGettingWeeklyAviability
         response.Days.Wednesday.Should().BeNull();
         response.Days.Thursday.Should().BeNull();
         response.Days.Friday.Should().BeNull();
+        response.Days.Saturday.Should().BeNull();
+        response.Days.Sunday.Should().BeNull();
 
         response.Days.Monday.Should().NotBeNull();
         response.Days.Monday!.FreeSlots.Should().NotBeNullOrEmpty().And.HaveCount(3);
