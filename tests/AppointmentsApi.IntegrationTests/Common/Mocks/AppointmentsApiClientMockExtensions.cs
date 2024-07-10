@@ -8,4 +8,9 @@ public static class AppointmentsApiClientMockExtensions
     {
         MockedAppointmentsApiClient.Assume(date, response);
     }
+
+    public static List<ReserveAppointmentSlotExteranalApiRequest> GetSentReservationRequests(this TestServerFixture _)
+    {
+        return MockedAppointmentsApiClient.GetAllReservationResquest();
+    }
 }

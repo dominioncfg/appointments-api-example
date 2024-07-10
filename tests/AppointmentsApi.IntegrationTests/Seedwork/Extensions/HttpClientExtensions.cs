@@ -7,6 +7,11 @@ namespace AppointmentsApi.IntegrationTests.Seedwork;
 
 public static class HttpClientExtensions
 {
+    private static readonly JsonSerializerOptions SerializationOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+
     public static async Task GetAndExpectNotFoundAsync(this HttpClient client, string url)
     {
         var response = await client.GetAsync(url);
@@ -33,7 +38,7 @@ public static class HttpClientExtensions
 
     public static async Task PostAndExpectBadRequestAsync(this HttpClient client, string url, object request)
     {
-        var json = JsonSerializer.Serialize(request);
+        var json = JsonSerializer.Serialize(request, SerializationOptions);
         var httpContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await client.PostAsync(url, httpContent);
         response.IsSuccessStatusCode.Should().BeFalse();
@@ -42,7 +47,7 @@ public static class HttpClientExtensions
 
     public static async Task PostAndExpectCreatedAsync(this HttpClient client, string url, object request)
     {
-        var json = JsonSerializer.Serialize(request);
+        var json = JsonSerializer.Serialize(request, SerializationOptions);
         var httpContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await client.PostAsync(url, httpContent);
         response.IsSuccessStatusCode.Should().BeTrue();

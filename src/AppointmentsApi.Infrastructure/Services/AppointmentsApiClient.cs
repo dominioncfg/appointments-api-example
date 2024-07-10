@@ -1,4 +1,8 @@
 ﻿using AppointmentsApi.Domain.Services;
+using System.Net.Mime;
+using System.Net;
+using System.Text;
+using System;
 using System.Text.Json;
 
 namespace AppointmentsApi.Infrastructure.Services;
@@ -25,5 +29,14 @@ public class AppointmentsApiClient : IAppointmentsApiClient
 
         return result is null ? throw new System.Exception("The Response could not be parsed.") : result;
 
+    }
+
+    public async Task ReserveAppointment(ReserveAppointmentSlotExteranalApiRequest request, CancellationToken cancellationToken)
+    {
+        var postUrl = $"api/availability/TakeSlot";
+        var json = JsonSerializer.Serialize(request);
+        var httpContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
+        var response = await _client.PostAsync(postUrl, httpContent);
+        response.EnsureSuccessStatusCode();
     }
 }
