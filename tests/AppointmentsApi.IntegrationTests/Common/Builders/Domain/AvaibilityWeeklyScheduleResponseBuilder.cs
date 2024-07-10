@@ -1,4 +1,5 @@
 ﻿using AppointmentsApi.Domain.Services;
+using FluentAssertions.Extensions;
 
 namespace AppointmentsApi.IntegrationTests.Common;
 public class AvaibilityWeeklyScheduleResponseBuilder
@@ -49,10 +50,24 @@ public class AvaibilityWeeklyScheduleResponseBuilder
         return this;
     }
 
+    public AvaibilityWeeklyScheduleResponseBuilder WithTuesday(Action<DayScheduleResponseBuilder> dayBuilder)
+    {
+        var builder = new DayScheduleResponseBuilder();
+        dayBuilder.Invoke(builder);
+        return WithTuesday(builder.Build());
+    }
+
     public AvaibilityWeeklyScheduleResponseBuilder WithWednesday(DayScheduleResponse wednesday)
     {
         _wednesday = wednesday;
         return this;
+    }
+
+    public AvaibilityWeeklyScheduleResponseBuilder WithWednesday(Action<DayScheduleResponseBuilder> dayBuilder)
+    {
+        var builder = new DayScheduleResponseBuilder();
+        dayBuilder.Invoke(builder);
+        return WithWednesday(builder.Build());
     }
 
     public AvaibilityWeeklyScheduleResponseBuilder WithThursday(DayScheduleResponse thursday)
@@ -61,10 +76,24 @@ public class AvaibilityWeeklyScheduleResponseBuilder
         return this;
     }
 
+    public AvaibilityWeeklyScheduleResponseBuilder WithThursday(Action<DayScheduleResponseBuilder> dayBuilder)
+    {
+        var builder = new DayScheduleResponseBuilder();
+        dayBuilder.Invoke(builder);
+        return WithThursday(builder.Build());
+    }
+
     public AvaibilityWeeklyScheduleResponseBuilder WithFriday(DayScheduleResponse friday)
     {
         _friday = friday;
         return this;
+    }
+
+    public AvaibilityWeeklyScheduleResponseBuilder WithFriday(Action<DayScheduleResponseBuilder> dayBuilder)
+    {
+        var builder = new DayScheduleResponseBuilder();
+        dayBuilder.Invoke(builder);
+        return WithFriday(builder.Build());
     }
 
     public AvaibilityWeeklyScheduleResponse Build()
@@ -80,6 +109,29 @@ public class AvaibilityWeeklyScheduleResponseBuilder
             Friday = _friday
         };
     }
+
+    private static readonly DateTime SomeMonday = new(2024, 07, 08);
+    public static AvaibilityWeeklyScheduleResponseBuilder ValidWorkingScheduleResponse() => new AvaibilityWeeklyScheduleResponseBuilder()
+         .WithFacility(facility => facility
+                .WithFacilityId(Guid.NewGuid())
+                .WithName("Las Palmeras")
+                .WithAddress("Plaza de la independencia 36, 38006 Santa Cruz de Tenerife")
+            )
+            .WithSlotDurationMinutes(30)
+            .WithMonday(monday => monday
+                .WithWorkPeriod(period => period
+                    .WithStartHour(9)
+                    .WithLunchStartHour(10)
+                    .WithLunchEndHour(11)
+                    .WithEndHour(12)
+                )
+                .WithBusySlots(slots => slots
+                    .WithBusySlot(slot => slot
+                        .WithStart(SomeMonday.At(11, 00))
+                        .WithEnd(SomeMonday.At(11, 30))
+                    )
+                )
+            );
 }
 
 public class FacilityResponseBuilder

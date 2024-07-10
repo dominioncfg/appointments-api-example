@@ -76,8 +76,8 @@ public class GetWeeklyAvaiabilityQueryHandler : IRequestHandler<GetWeeklyAvaiabi
         var wednesday = GetAvailableSpots(response.Wednesday, date.Date.AddDays(2), response.SlotDurationMinutes);
         var thursday = GetAvailableSpots(response.Thursday, date.Date.AddDays(3), response.SlotDurationMinutes);
         var friday = GetAvailableSpots(response.Friday, date.Date.AddDays(4), response.SlotDurationMinutes);
-        var saturday = GetAvailableSpots(response.Friday, date.Date.AddDays(5), response.SlotDurationMinutes);
-        var sunday = GetAvailableSpots(response.Friday, date.Date.AddDays(6), response.SlotDurationMinutes);
+        var saturday = GetAvailableSpots(response.Saturday, date.Date.AddDays(5), response.SlotDurationMinutes);
+        var sunday = GetAvailableSpots(response.Saturday, date.Date.AddDays(6), response.SlotDurationMinutes);
 
 
         return new GetWeeklyAvaiabilityQueryResponse
@@ -108,23 +108,22 @@ public class GetWeeklyAvaiabilityQueryHandler : IRequestHandler<GetWeeklyAvaiabi
             return null;
 
         var activeWorkingPeriods = GetActiveWorkingPeriods(day, schedulingDate);
-        var busySlots = day.BusySlots.Select(x => new Period(x.Start, x.End)).ToList();
+        var busySlots = day.BusySlots.Select(x => new TimePeriod(x.Start, x.End)).ToList();
 
-        var appointmentsSlots = new List<Period>();
+        var appointmentsSlots = new List<TimePeriod>();
         foreach (var workingPeriod in activeWorkingPeriods)
         {
             var periodStart = workingPeriod.Start;
             while (periodStart < workingPeriod.End)
             {
                 var slotEnd = periodStart.AddMinutes(slotDurationMinutes);
-                var appointmentSlot = new Period(periodStart, slotEnd);
-                if (appointmentSlot.IsContainedWithin(workingPeriod) && !busySlots.Any(x=>x.OverlapsWith(appointmentSlot)))
+                var appointmentSlot = new TimePeriod(periodStart, slotEnd);
+                if (appointmentSlot.IsContainedWithin(workingPeriod) && !busySlots.Any(x => x.OverlapsWith(appointmentSlot)))
                 {
                     appointmentsSlots.Add(appointmentSlot);
                 }
                 periodStart = slotEnd;
             }
-
         }
 
         return new GetWeeklyAvaiabilityDayScheduleQueryResponse()
@@ -138,17 +137,16 @@ public class GetWeeklyAvaiabilityQueryHandler : IRequestHandler<GetWeeklyAvaiabi
 
     }
 
-    private static List<Period> GetActiveWorkingPeriods(DayScheduleResponse day, DateTime schedulingDate)
+    private static List<TimePeriod> GetActiveWorkingPeriods(DayScheduleResponse day, DateTime schedulingDate)
     {
         var dayStartingHour = schedulingDate.AddHours(day.WorkPeriod.StartHour);
         var dayFinishingHour = schedulingDate.AddHours(day.WorkPeriod.EndHour);
 
-        var workingPeriod = new Period(dayStartingHour, dayFinishingHour);
-
         var lunchStartingHour = schedulingDate.AddHours(day.WorkPeriod.LunchStartHour);
         var lunchFinishingHour = schedulingDate.AddHours(day.WorkPeriod.LunchEndHour);
-        
-        var lunchPeriod = new Period(lunchStartingHour, lunchFinishingHour);
+
+        var workingPeriod = new TimePeriod(dayStartingHour, dayFinishingHour);
+        var lunchPeriod = new TimePeriod(lunchStartingHour, lunchFinishingHour);
 
 
         if (!lunchPeriod.IsContainedWithin(workingPeriod))
@@ -157,8 +155,8 @@ public class GetWeeklyAvaiabilityQueryHandler : IRequestHandler<GetWeeklyAvaiabi
 
         return
         [
-            new Period(dayStartingHour,lunchStartingHour),
-            new Period(lunchFinishingHour,dayFinishingHour)
+            new TimePeriod(dayStartingHour,lunchStartingHour),
+            new TimePeriod(lunchFinishingHour,dayFinishingHour)
         ];
     }
 }
