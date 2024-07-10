@@ -22,4 +22,8 @@
     <ProjectReference Include="..\AppointmentsApi.Infrastructure\AppointmentsApi.Infrastructure.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
 </Project>
