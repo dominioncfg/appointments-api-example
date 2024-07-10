@@ -1,5 +1,5 @@
-﻿using AppointmentsApi.Domain.Services;
-using AppointmentsApi.Domain.ValueObjects;
+﻿using AppointmentsApi.Domain;
+using AppointmentsApi.Domain.Services;
 using FluentValidation;
 using MediatR;
 
@@ -71,14 +71,7 @@ public class GetWeeklyAvaiabilityQueryHandler : IRequestHandler<GetWeeklyAvaiabi
 
         var response = await _appointmentsApiClient.GetWeeklyAvaibility(date, cancellationToken);
 
-        var monday = GetAvailableSpots(response.Monday, date.Date, response.SlotDurationMinutes);
-        var tuesday = GetAvailableSpots(response.Tuesday, date.Date.AddDays(1), response.SlotDurationMinutes);
-        var wednesday = GetAvailableSpots(response.Wednesday, date.Date.AddDays(2), response.SlotDurationMinutes);
-        var thursday = GetAvailableSpots(response.Thursday, date.Date.AddDays(3), response.SlotDurationMinutes);
-        var friday = GetAvailableSpots(response.Friday, date.Date.AddDays(4), response.SlotDurationMinutes);
-        var saturday = GetAvailableSpots(response.Saturday, date.Date.AddDays(5), response.SlotDurationMinutes);
-        var sunday = GetAvailableSpots(response.Saturday, date.Date.AddDays(6), response.SlotDurationMinutes);
-
+        var scheduler = WeekSchedulerScheduler.FromBusySlots(date, response);
 
         return new GetWeeklyAvaiabilityQueryResponse
         {
@@ -91,72 +84,29 @@ public class GetWeeklyAvaiabilityQueryHandler : IRequestHandler<GetWeeklyAvaiabi
             SlotDurationMinutes = response.SlotDurationMinutes,
             Days = new GetWeeklyAvaiabilityDaysQueryResponse()
             {
-                Monday = monday,
-                Tuesday = tuesday,
-                Wednesday = wednesday,
-                Thursday = thursday,
-                Friday = friday,
-                Saturday = saturday,
-                Sunday = sunday,
+                Monday = ConvertDayFromDomain(scheduler.Monday),
+                Tuesday = ConvertDayFromDomain(scheduler.Tuesday),
+                Wednesday = ConvertDayFromDomain(scheduler.Wednesday),
+                Thursday = ConvertDayFromDomain(scheduler.Thursday),
+                Friday = ConvertDayFromDomain(scheduler.Friday),
+                Saturday = ConvertDayFromDomain(scheduler.Saturday),
+                Sunday = ConvertDayFromDomain(scheduler.Sunday),
             }
         };
     }
 
-    private static GetWeeklyAvaiabilityDayScheduleQueryResponse? GetAvailableSpots(DayScheduleResponse? day, DateTime schedulingDate, int slotDurationMinutes)
+    private static GetWeeklyAvaiabilityDayScheduleQueryResponse? ConvertDayFromDomain(DaySchedule? daySchedule)
     {
-        if (day is null)
+        if(daySchedule is null)
             return null;
-
-        var activeWorkingPeriods = GetActiveWorkingPeriods(day, schedulingDate);
-        var busySlots = day.BusySlots.Select(x => new TimePeriod(x.Start, x.End)).ToList();
-
-        var appointmentsSlots = new List<TimePeriod>();
-        foreach (var workingPeriod in activeWorkingPeriods)
-        {
-            var periodStart = workingPeriod.Start;
-            while (periodStart < workingPeriod.End)
-            {
-                var slotEnd = periodStart.AddMinutes(slotDurationMinutes);
-                var appointmentSlot = new TimePeriod(periodStart, slotEnd);
-                if (appointmentSlot.IsContainedWithin(workingPeriod) && !busySlots.Any(x => x.OverlapsWith(appointmentSlot)))
-                {
-                    appointmentsSlots.Add(appointmentSlot);
-                }
-                periodStart = slotEnd;
-            }
-        }
 
         return new GetWeeklyAvaiabilityDayScheduleQueryResponse()
         {
-            FreeSlots= appointmentsSlots.Select(x => new GetWeeklyAvaiabilitySlotQueryResponse()
+            FreeSlots = daySchedule.FreeSlots.Select(x => new GetWeeklyAvaiabilitySlotQueryResponse()
             {
                 Start = x.Start,
                 End = x.End,
-            }).ToList()
+            }).ToList(),
         };
-
-    }
-
-    private static List<TimePeriod> GetActiveWorkingPeriods(DayScheduleResponse day, DateTime schedulingDate)
-    {
-        var dayStartingHour = schedulingDate.AddHours(day.WorkPeriod.StartHour);
-        var dayFinishingHour = schedulingDate.AddHours(day.WorkPeriod.EndHour);
-
-        var lunchStartingHour = schedulingDate.AddHours(day.WorkPeriod.LunchStartHour);
-        var lunchFinishingHour = schedulingDate.AddHours(day.WorkPeriod.LunchEndHour);
-
-        var workingPeriod = new TimePeriod(dayStartingHour, dayFinishingHour);
-        var lunchPeriod = new TimePeriod(lunchStartingHour, lunchFinishingHour);
-
-
-        if (!lunchPeriod.IsContainedWithin(workingPeriod))
-            return [workingPeriod];
-
-
-        return
-        [
-            new TimePeriod(dayStartingHour,lunchStartingHour),
-            new TimePeriod(lunchFinishingHour,dayFinishingHour)
-        ];
     }
 }
