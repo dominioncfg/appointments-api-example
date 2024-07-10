@@ -22,17 +22,7 @@ public class WhenReservingSlots
         var workingSchedule = AvaibilityWeeklyScheduleResponseBuilder
              .ValidWorkingScheduleOnDayWithNoBusySlotsResponse()
              .Build();
-        var validRequest = new ReserveAppointmentSlotApiRequestBuilder()
-            .WithStart(SomeMonday.At(09, 00))
-            .WithEnd(SomeMonday.At(09, 30))
-            .WithComments("Testing Appointment Reservation")
-            .WithFacilityId(Guid.NewGuid())
-            .WithPatient(patient => patient
-                .WithEmail("test@gmail.com")
-                .WithName("Tester")
-                .WithSecondName("Testing")
-                .WithPhone("5510111")
-            ).Build();
+        var validRequest = GivenValidRequest().Build();
         Given.AsssumeWeeklyScheduleReturnedByExternalApiForDate(SomeMonday, workingSchedule);
         AssumeAppointmentCreatedForExternalApi(validRequest);
         await PostAndExpectCreated(validRequest);
@@ -61,17 +51,10 @@ public class WhenReservingSlots
                    )
                )
                .Build();
-        var validRequest = new ReserveAppointmentSlotApiRequestBuilder()
+        var validRequest = GivenValidRequest()
             .WithStart(SomeMonday.At(11, 30))
             .WithEnd(SomeMonday.At(12, 00))
-            .WithComments("Testing Appointment Reservation")
-            .WithFacilityId(Guid.NewGuid())
-            .WithPatient(patient => patient
-                .WithEmail("test@gmail.com")
-                .WithName("Tester")
-                .WithSecondName("Testing")
-                .WithPhone("5510111")
-            ).Build();
+            .Build();
 
 
         Given.AsssumeWeeklyScheduleReturnedByExternalApiForDate(SomeMonday, workingSchedule);
@@ -99,17 +82,12 @@ public class WhenReservingSlots
         var workingSchedule = AvaibilityWeeklyScheduleResponseBuilder
                 .ValidWorkingScheduleOnDayWithNoBusySlotsResponse()
                 .Build();
-        var validRequest = new ReserveAppointmentSlotApiRequestBuilder()
+
+        var validRequest = GivenValidRequest()
             .WithStart(date.At(09, 00))
             .WithEnd(date.At(09, 30))
-            .WithComments("Testing Appointment Reservation")
-            .WithFacilityId(Guid.NewGuid())
-            .WithPatient(patient => patient
-                .WithEmail("test@gmail.com")
-                .WithName("Tester")
-                .WithSecondName("Testing")
-                .WithPhone("5510111")
-            ).Build();
+            .Build();
+       
         Given.AsssumeWeeklyScheduleReturnedByExternalApiForDate(SomeMonday, workingSchedule);
         AssumeAppointmentCreatedForExternalApi(validRequest);
         await PostAndExpectCreated(validRequest);
@@ -117,19 +95,92 @@ public class WhenReservingSlots
 
     [Fact]
     [ResetApplicationState]
-    public async Task ReturnsBadRequestWhenDefauDate()
+    public async Task ReturnsBadRequestWhenDefaultStartDate()
     {
-        var inValidRequest = new ReserveAppointmentSlotApiRequestBuilder()
+        var inValidRequest = GivenValidRequest()
             .WithStart(DateTime.MinValue)
-            .WithEnd(SomeMonday.At(09, 30))
-            .WithComments("Testing Appointment Reservation")
-            .WithFacilityId(Guid.NewGuid())
-            .WithPatient(patient => patient
-                .WithEmail("test@gmail.com")
-                .WithName("Tester")
-                .WithSecondName("Testing")
-                .WithPhone("5510111")
-            ).Build();
+            .Build();
+        await PostAndExpectBadRequest(inValidRequest);
+    }
+
+    [Fact]
+    [ResetApplicationState]
+    public async Task ReturnsBadRequestWhenDefaultEndDate()
+    {
+        var inValidRequest = GivenValidRequest()
+            .WithEnd(DateTime.MinValue)
+            .Build();
+        await PostAndExpectBadRequest(inValidRequest);
+    }
+
+    [Fact]
+    [ResetApplicationState]
+    public async Task ReturnsBadRequestWhenEndDateIsBeforeStartDate()
+    {
+        var inValidRequest = GivenValidRequest()
+            .WithStart(SomeMonday.At(10, 00))
+            .WithEnd(SomeMonday.At(9,00))
+            .Build();
+        await PostAndExpectBadRequest(inValidRequest);
+    }
+
+    [Fact]
+    [ResetApplicationState]
+    public async Task ReturnsBadRequestWhenNameIsNotSent()
+    {
+        var inValidRequest = GivenValidRequest()
+            .WithPatient(x=>x
+                .WithName(null!)
+                .WithPhone("551001")
+                .WithEmail("juan@gmail.com")
+                .WithSecondName("SN")
+            )
+            .Build();
+        await PostAndExpectBadRequest(inValidRequest);
+    }
+
+    [Fact]
+    [ResetApplicationState]
+    public async Task ReturnsBadRequestWhenPhoneIsNotSent()
+    {
+        var inValidRequest = GivenValidRequest()
+            .WithPatient(x => x
+                .WithName("FN")
+                .WithPhone(null!)
+                .WithEmail("juan@gmail.com")
+                .WithSecondName("SN")
+            )
+            .Build();
+        await PostAndExpectBadRequest(inValidRequest);
+    }
+
+    [Fact]
+    [ResetApplicationState]
+    public async Task ReturnsBadRequestWhenEmailIsNotSent()
+    {
+        var inValidRequest = GivenValidRequest()
+            .WithPatient(x => x
+                .WithName("FN")
+                .WithPhone("551001")
+                .WithEmail(null!)
+                .WithSecondName("SN")
+            )
+            .Build();
+        await PostAndExpectBadRequest(inValidRequest);
+    }
+
+    [Fact]
+    [ResetApplicationState]
+    public async Task ReturnsBadRequestWhenSecondNameIsNotSent()
+    {
+        var inValidRequest = GivenValidRequest()
+            .WithPatient(x => x
+                .WithName("FN")
+                .WithPhone("551001")
+                .WithEmail("juan@gmail.com")
+                .WithSecondName(null!)
+            )
+            .Build();
         await PostAndExpectBadRequest(inValidRequest);
     }
 
@@ -147,6 +198,21 @@ public class WhenReservingSlots
                        .WithPhone(validRequest.Patient.Phone)
                    ).Build();
         Given.AsssumeAccepetedExternalApiReservationForRequest(expectedExternalApiRequest);
+    }
+
+    private static ReserveAppointmentSlotApiRequestBuilder GivenValidRequest()
+    {
+        return new ReserveAppointmentSlotApiRequestBuilder()
+            .WithStart(SomeMonday.At(09, 00))
+            .WithEnd(SomeMonday.At(09, 30))
+            .WithComments("Testing Appointment Reservation")
+            .WithFacilityId(Guid.NewGuid())
+            .WithPatient(patient => patient
+                .WithEmail("test@gmail.com")
+                .WithName("Tester")
+                .WithSecondName("Testing")
+                .WithPhone("5510111")
+            );
     }
 
     private async Task PostAndExpectCreated(ReserveAppointmentSlotApiRequest request)

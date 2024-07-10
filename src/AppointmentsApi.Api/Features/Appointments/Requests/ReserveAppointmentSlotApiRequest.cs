@@ -4,7 +4,7 @@ public record ReserveAppointmentSlotApiRequest
 {
     public DateTime Start { get; init; }
     public DateTime End { get; init; }
-    public string Comments { get; init; } = string.Empty;
+    public string? Comments { get; init; } = string.Empty;
     public ReserveppointmentSlottPatientApiRequest Patient { get; init; } = new();
     public Guid FacilityId { get; init; }
 }

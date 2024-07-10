@@ -6,7 +6,7 @@ public class ReserveAppointmentSlotExteranalApiRequestBuilder
 {
     private DateTime _start;
     private DateTime _end;
-    private string _comments = string.Empty;
+    private string? _comments = string.Empty;
     private ReserveAppointmentSlotPatientExteranalApiRequest _patient = new();
     private Guid _facilityId;
 
@@ -22,7 +22,7 @@ public class ReserveAppointmentSlotExteranalApiRequestBuilder
         return this;
     }
 
-    public ReserveAppointmentSlotExteranalApiRequestBuilder WithComments(string comments)
+    public ReserveAppointmentSlotExteranalApiRequestBuilder WithComments(string? comments)
     {
         _comments = comments;
         return this;
