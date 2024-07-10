@@ -62,12 +62,12 @@ public record GetWeeklyAviabilityDaysApiResponse
     public GetWeeklyAviabilityDayScheduleApiResponse? Friday { get; init; }
 }
 
-public class GetWeeklyAviabilityDayScheduleApiResponse
+public record GetWeeklyAviabilityDayScheduleApiResponse
 {
     public List<GetWeeklyAviabilitySlotApiResponse> FreeSlots { get; init; } = [];
 }
 
-public class GetWeeklyAviabilitySlotApiResponse
+public record GetWeeklyAviabilitySlotApiResponse
 {
     public DateTime Start { get; init; }
     public DateTime End { get; init; }

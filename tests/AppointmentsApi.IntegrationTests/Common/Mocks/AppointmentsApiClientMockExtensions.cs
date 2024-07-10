@@ -1,16 +1,39 @@
 ﻿using AppointmentsApi.Domain.Services;
+using Microsoft.Extensions.DependencyInjection;
+using RichardSzalay.MockHttp;
+using System.Net;
+using System.Text.Json;
 
 namespace AppointmentsApi.IntegrationTests.Common;
 
 public static class AppointmentsApiClientMockExtensions
 {
-    public static void AsssumeWeeklyScheduleApiClientResponseFor(this TestServerFixture _, DateTime date, AvaibilityWeeklyScheduleResponse response)
+    public static void AsssumeWeeklyScheduleReturnedByExternalApiForDate(this TestServerFixture fixture, DateTime date, AvaibilityWeeklyScheduleResponse response)
     {
-        MockedAppointmentsApiClient.Assume(date, response);
+        fixture.ExecuteScope(serviceProvider =>
+        {
+            var jsonResponse = JsonSerializer.Serialize(response);
+            var handler = serviceProvider.GetRequiredService<MockHttpMessageHandler>();
+            handler
+                .When(HttpMethod.Get, $"{MockedAppointmentClientConfiguration.BaseUrl}/api/availability/GetWeeklyAvailability/{date:yyyyMMdd}")
+                .Respond("application/json", jsonResponse);
+        });
     }
 
-    public static List<ReserveAppointmentSlotExteranalApiRequest> GetSentReservationRequests(this TestServerFixture _)
+    public static void AsssumeAccepetedExternalApiReservationForRequest(this TestServerFixture fixture, ReserveAppointmentSlotExteranalApiRequest expectedRequest)
     {
-        return MockedAppointmentsApiClient.GetAllReservationResquest();
+        fixture.ExecuteScope(serviceProvider =>
+        {
+            var handler = serviceProvider.GetRequiredService<MockHttpMessageHandler>();
+            handler
+                .When(HttpMethod.Post, $"{MockedAppointmentClientConfiguration.BaseUrl}/api/availability/TakeSlot")
+                .With(request=>
+                {
+                    var responseJson = request.Content.ReadAsStringAsync(default).GetAwaiter().GetResult();
+                    var result = JsonSerializer.Deserialize<ReserveAppointmentSlotExteranalApiRequest>(responseJson);
+                    return expectedRequest == result;
+                })
+                .Respond(HttpStatusCode.OK);
+        });
     }
 }

@@ -19,6 +19,7 @@ public class WhenReservingSlots
     [ResetApplicationState]
     public async Task CanReserveAppointment()
     {
+
         var validRequest = new ReserveAppointmentSlotApiRequestBuilder()
             .WithStart(SomeMonday.At(09, 00))
             .WithEnd(SomeMonday.At(09, 30))
@@ -30,26 +31,23 @@ public class WhenReservingSlots
                 .WithSecondName("Testing")
                 .WithPhone("5510111")
             ).Build();
+
+        var expectedExternalApiRequest = new ReserveAppointmentSlotExteranalApiRequestBuilder()
+           .WithStart(validRequest.Start)
+           .WithEnd(validRequest.End)
+           .WithComments(validRequest.Comments)
+           .WithFacilityId(validRequest.FacilityId)
+           .WithPatient(patient => patient
+               .WithEmail(validRequest.Patient.Email)
+               .WithName(validRequest.Patient.Name)
+               .WithSecondName(validRequest.Patient.SecondName)
+               .WithPhone(validRequest.Patient.Phone)
+           ).Build();
+        Given.AsssumeAccepetedExternalApiReservationForRequest(expectedExternalApiRequest);
         await PostAndExpectCreated(validRequest);
-
-        var reservationRequestsSent = Given.GetSentReservationRequests();
-        reservationRequestsSent.Should().NotBeNull().And.HaveCount(1);
-        var requestToExternalApi = reservationRequestsSent.First();
-
-        requestToExternalApi.Should().NotBeNull();
-        requestToExternalApi.Start.Should().Be(validRequest.Start);
-        requestToExternalApi.End.Should().Be(validRequest.End);
-        requestToExternalApi.Comments.Should().Be(validRequest.Comments);
-        requestToExternalApi.FacilityId.Should().Be(validRequest.FacilityId);
-        
-        requestToExternalApi.Patient.Should().NotBeNull();
-        requestToExternalApi.Patient.Email.Should().Be(validRequest.Patient.Email);
-        requestToExternalApi.Patient.Name.Should().Be(validRequest.Patient.Name);
-        requestToExternalApi.Patient.SecondName.Should().Be(validRequest.Patient.SecondName);
-        requestToExternalApi.Patient.Phone.Should().Be(validRequest.Patient.Phone);
     }
 
-   
+
     [Fact]
     [ResetApplicationState]
     public async Task ReturnsBadRequestWhenDefauDate()
@@ -79,10 +77,6 @@ public class WhenReservingSlots
         var url = ReserveAppointmentsUrl();
         await Given.Server.CreateClient().PostAndExpectBadRequestAsync(url, request);
     }
-
-
+    
     private static string ReserveAppointmentsUrl() => $"api/appointments/reserve";
 }
-
-
-

@@ -13,7 +13,7 @@ public record ReserveAppointmentSlotCommand : IRequest
     public Guid FacilityId { get; init; }
 }
 
-public class ReserveAppointmentSlotPatientCommand
+public record ReserveAppointmentSlotPatientCommand
 {
     public string Name { get; init; } = string.Empty;
     public string SecondName { get; init; } = string.Empty;

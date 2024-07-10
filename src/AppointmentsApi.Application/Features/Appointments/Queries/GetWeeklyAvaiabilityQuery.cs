@@ -34,12 +34,12 @@ public record GetWeeklyAvaiabilityDaysQueryResponse
 }
 
 
-public class GetWeeklyAvaiabilityDayScheduleQueryResponse
+public record GetWeeklyAvaiabilityDayScheduleQueryResponse
 {
     public List<GetWeeklyAvaiabilitySlotQueryResponse> FreeSlots { get; init; } = [];
 }
 
-public class GetWeeklyAvaiabilitySlotQueryResponse
+public record GetWeeklyAvaiabilitySlotQueryResponse
 {
     public DateTime Start { get; init; }
     public DateTime End { get; init; }

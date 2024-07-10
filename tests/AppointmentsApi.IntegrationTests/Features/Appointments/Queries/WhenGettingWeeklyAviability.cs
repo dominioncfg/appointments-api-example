@@ -41,8 +41,7 @@ public class WhenGettingWeeklyAviability
                 )
             )
             .Build();
-
-        Given.AsssumeWeeklyScheduleApiClientResponseFor(SomeMonday, apiResponse);
+        Given.AsssumeWeeklyScheduleReturnedByExternalApiForDate(SomeMonday, apiResponse);
 
         var url = GetAppointmentsUrl(SomeMonday);
         var response = await Given.Server.CreateClient().GetAsync<GetWeeklyAviabilityApiResponse>(url);

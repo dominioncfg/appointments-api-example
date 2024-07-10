@@ -9,7 +9,7 @@ public record ReserveAppointmentSlotExteranalApiRequest
     public Guid FacilityId { get; init; }
 }
 
-public class ReserveAppointmentSlotPatientExteranalApiRequest
+public record ReserveAppointmentSlotPatientExteranalApiRequest
 {
     public string Name { get; init; } = string.Empty;
     public string SecondName { get; init; } = string.Empty;
