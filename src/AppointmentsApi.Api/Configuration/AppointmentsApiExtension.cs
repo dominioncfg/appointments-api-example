@@ -12,7 +12,8 @@ public static class AppointmentsApiExtension
         services
             .AddCustomMediatR()
             .AddCustomFluentValidation()
-            .AddCustomProblemDetails();
+            .AddCustomProblemDetails()
+            .AddAppointmentsInfrastructure();
         return services;
     }
 

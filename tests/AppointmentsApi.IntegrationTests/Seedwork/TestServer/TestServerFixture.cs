@@ -52,7 +52,7 @@ public sealed class TestServerFixture : IDisposable
                     })
                     .ConfigureTestServices(services =>
                     {
-
+                        services.ConfigureMocks();
                     });
             });
     }

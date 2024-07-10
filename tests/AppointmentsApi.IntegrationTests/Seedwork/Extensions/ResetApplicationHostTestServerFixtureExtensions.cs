@@ -2,7 +2,8 @@
 
 public static class ResetApplicationHostTestServerFixtureExtensions
 {
-    public static void OnTestInitResetApplicationServices(this TestServerFixture _)
+    public static void OnTestInitResetApplicationServices(this TestServerFixture server)
     {
+        server.ResetMocks();
     }
 }

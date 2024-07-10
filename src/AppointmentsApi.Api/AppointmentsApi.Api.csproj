@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AppointmentsApi.Application\AppointmentsApi.Application.csproj" />
+    <ProjectReference Include="..\AppointmentsApi.Infrastructure\AppointmentsApi.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

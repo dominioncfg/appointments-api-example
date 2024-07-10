@@ -35,7 +35,7 @@ internal static class ProblemDetailsConfiguration
         return app;
     }
 
-    private static IActionResult ProblemDetailsApiBehaviorConfiguration(ActionContext context)
+    private static BadRequestObjectResult ProblemDetailsApiBehaviorConfiguration(ActionContext context)
     {
         var problemDetails = new ValidationProblemDetails(context.ModelState)
         {
