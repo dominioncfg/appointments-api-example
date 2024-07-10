@@ -1,1 +1,1 @@
-This requires .Net 8 SDK
+This Project requires .Net 8 SDK
