@@ -1,4 +1,6 @@
-﻿using AppointmentsApi.Domain.Services;
+﻿using AppointmentsApi.Domain;
+using AppointmentsApi.Domain.Services;
+using AppointmentsApi.Domain.ValueObjects;
 using FluentValidation;
 using MediatR;
 
@@ -45,7 +47,13 @@ public class ReserveAppointmentSlotCommandHandler : IRequestHandler<ReserveAppoi
 
     public async Task Handle(ReserveAppointmentSlotCommand request, CancellationToken cancellationToken)
     {
-      
+        var schedulingStart = request.Start.Date.GetStartOfSchedulingWeek();
+        var apiResponse = await _appointmentsApiClient.GetWeeklyAvaibility(schedulingStart,cancellationToken);
+        var scheduler = WeekScheduler.FromBusySlots(schedulingStart,apiResponse);
+
+        if(!scheduler.IsSlotFree(new TimePeriod(request.Start,request.End)))
+            throw new SlotIsNotFreeApplicationException("The Slot that you requested is not available");
+
          var sendRequest = new ReserveAppointmentSlotExteranalApiRequest()
          {
              Start = request.Start,

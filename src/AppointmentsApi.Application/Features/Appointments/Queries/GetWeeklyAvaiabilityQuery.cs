@@ -71,7 +71,7 @@ public class GetWeeklyAvaiabilityQueryHandler : IRequestHandler<GetWeeklyAvaiabi
 
         var response = await _appointmentsApiClient.GetWeeklyAvaibility(date, cancellationToken);
 
-        var scheduler = WeekSchedulerScheduler.FromBusySlots(date, response);
+        var scheduler = WeekScheduler.FromBusySlots(date, response);
 
         return new GetWeeklyAvaiabilityQueryResponse
         {

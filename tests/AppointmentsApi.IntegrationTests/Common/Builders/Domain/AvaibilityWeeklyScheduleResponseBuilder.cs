@@ -11,6 +11,8 @@ public class AvaibilityWeeklyScheduleResponseBuilder
     private DayScheduleResponse? _wednesday;
     private DayScheduleResponse? _thursday;
     private DayScheduleResponse? _friday;
+    private DayScheduleResponse? _saturday;
+    private DayScheduleResponse? _sunday;
 
     public AvaibilityWeeklyScheduleResponseBuilder WithFacility(FacilityResponse facility)
     {
@@ -96,6 +98,32 @@ public class AvaibilityWeeklyScheduleResponseBuilder
         return WithFriday(builder.Build());
     }
 
+    public AvaibilityWeeklyScheduleResponseBuilder WithSaturday(DayScheduleResponse saturday)
+    {
+        _saturday = saturday;
+        return this;
+    }
+
+    public AvaibilityWeeklyScheduleResponseBuilder WithSaturday(Action<DayScheduleResponseBuilder> dayBuilder)
+    {
+        var builder = new DayScheduleResponseBuilder();
+        dayBuilder.Invoke(builder);
+        return WithSaturday(builder.Build());
+    }
+
+    public AvaibilityWeeklyScheduleResponseBuilder WithSunday(DayScheduleResponse sunday)
+    {
+        _sunday = sunday;
+        return this;
+    }
+
+    public AvaibilityWeeklyScheduleResponseBuilder WithSunday(Action<DayScheduleResponseBuilder> dayBuilder)
+    {
+        var builder = new DayScheduleResponseBuilder();
+        dayBuilder.Invoke(builder);
+        return WithSunday(builder.Build());
+    }
+
     public AvaibilityWeeklyScheduleResponse Build()
     {
         return new AvaibilityWeeklyScheduleResponse
@@ -106,7 +134,9 @@ public class AvaibilityWeeklyScheduleResponseBuilder
             Tuesday = _tuesday,
             Wednesday = _wednesday,
             Thursday = _thursday,
-            Friday = _friday
+            Friday = _friday,
+            Saturday = _saturday,
+            Sunday = _sunday,
         };
     }
 
@@ -132,6 +162,70 @@ public class AvaibilityWeeklyScheduleResponseBuilder
                     )
                 )
             );
+
+    public static AvaibilityWeeklyScheduleResponseBuilder ValidWorkingScheduleOnDayWithNoBusySlotsResponse() => new AvaibilityWeeklyScheduleResponseBuilder()
+        .WithFacility(facility => facility
+               .WithFacilityId(Guid.NewGuid())
+               .WithName("Las Palmeras")
+               .WithAddress("Plaza de la independencia 36, 38006 Santa Cruz de Tenerife")
+           )
+           .WithSlotDurationMinutes(30)
+           .WithMonday(monday => monday
+               .WithWorkPeriod(period => period
+                   .WithStartHour(9)
+                   .WithLunchStartHour(12)
+                   .WithLunchEndHour(14)
+                   .WithEndHour(17)
+               )
+           )
+          .WithTuesday(day => day
+                .WithWorkPeriod(period => period
+                    .WithStartHour(9)
+                    .WithLunchStartHour(12)
+                    .WithLunchEndHour(14)
+                    .WithEndHour(17)
+                )
+          )
+          .WithWednesday(day => day
+                .WithWorkPeriod(period => period
+                    .WithStartHour(9)
+                    .WithLunchStartHour(12)
+                    .WithLunchEndHour(14)
+                    .WithEndHour(17)
+                )
+          )
+          .WithThursday(day => day
+                  .WithWorkPeriod(period => period
+                      .WithStartHour(9)
+                      .WithLunchStartHour(12)
+                      .WithLunchEndHour(14)
+                      .WithEndHour(17)
+                  )
+          )
+          .WithFriday(day => day
+                  .WithWorkPeriod(period => period
+                      .WithStartHour(9)
+                      .WithLunchStartHour(12)
+                      .WithLunchEndHour(14)
+                      .WithEndHour(17)
+                  )
+          )
+          .WithSaturday(day => day
+                  .WithWorkPeriod(period => period
+                      .WithStartHour(9)
+                      .WithLunchStartHour(12)
+                      .WithLunchEndHour(14)
+                      .WithEndHour(17)
+                  )
+          )
+          .WithSunday(day => day
+                  .WithWorkPeriod(period => period
+                      .WithStartHour(9)
+                      .WithLunchStartHour(12)
+                      .WithLunchEndHour(14)
+                      .WithEndHour(17)
+                  )
+          );
 }
 
 public class FacilityResponseBuilder
